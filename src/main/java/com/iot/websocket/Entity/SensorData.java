@@ -12,14 +12,18 @@ public class SensorData {
 
     private double temperature;
     private double humidity;
+    private double gas;
+    private double light;
 
+    public SensorData() {
+    }
 
-
-    public SensorData() {}
-
-    public SensorData(double temperature, double humidity) {
+    public SensorData(Long id, double temperature, double humidity, double gas, double light) {
+        this.id = id;
         this.temperature = temperature;
         this.humidity = humidity;
+        this.gas = gas;
+        this.light = light;
     }
 
     public Long getId() {
@@ -44,5 +48,21 @@ public class SensorData {
 
     public void setHumidity(double humidity) {
         this.humidity = humidity;
+    }
+
+    public double getGas() {
+        return gas;
+    }
+
+    public void setGas(double gas) {
+        this.gas = gas;
+    }
+
+    public double getLight() {
+        return light;
+    }
+
+    public void setLight(double light) {
+        this.light = light;
     }
 }
