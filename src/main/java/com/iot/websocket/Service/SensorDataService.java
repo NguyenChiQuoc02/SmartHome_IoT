@@ -18,13 +18,13 @@ public class SensorDataService {
   public SensorDataService(SensorDataRepository sensorDataRepository) {
     this.sensorDataRepository = sensorDataRepository;
   }
-  public SensorData getSensorData() {
-    Optional<SensorData> sensorData = this.sensorDataRepository.findById(1L);
-    if (sensorData.isPresent()) {
-      return sensorData.get();
-    }
-    return null;
-  }
+//  public SensorData getSensorData() {
+//    Optional<SensorData> sensorData = this.sensorDataRepository.findById(1L);
+//    if (sensorData.isPresent()) {
+//      return sensorData.get();
+//    }
+//    return null;
+//  }
 
   public SensorData saveSensorData(SensorData sensorData){
     return this.sensorDataRepository.save(sensorData);

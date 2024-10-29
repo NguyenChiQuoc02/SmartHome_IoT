@@ -1,29 +1,39 @@
 package com.iot.websocket.Entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
 public class SensorData {
 
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id = 1L;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id ;
+    private String event="sensor";
 
     private double temperature;
     private double humidity;
     private double gas;
-    private double light;
 
     public SensorData() {
     }
 
-    public SensorData(Long id, double temperature, double humidity, double gas, double light) {
+    public SensorData(Long id, String event,double temperature, double humidity, double gas) {
         this.id = id;
         this.temperature = temperature;
+        this.event =event;
         this.humidity = humidity;
         this.gas = gas;
-        this.light = light;
+    }
+
+    public String getEvent() {
+        return event;
+    }
+
+    public void setEvent(String event) {
+        this.event = event;
     }
 
     public Long getId() {
@@ -58,11 +68,5 @@ public class SensorData {
         this.gas = gas;
     }
 
-    public double getLight() {
-        return light;
-    }
 
-    public void setLight(double light) {
-        this.light = light;
-    }
 }

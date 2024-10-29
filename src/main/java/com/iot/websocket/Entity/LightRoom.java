@@ -8,20 +8,14 @@ import jakarta.persistence.Id;
 @Entity
 public class LightRoom {
   @Id
-//  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id = 1L;
-   private double lightRoom1;
-   private double lightRoom2;
-   private double lightLivingRoom;
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id ;
+  private String event = "light";
+   private boolean lightKitchen;
+   private boolean lightBed;
+   private boolean lightLivingRoom;
 
   public LightRoom() {
-  }
-
-  public LightRoom(Long id, double lightRoom1, double lightRoom2, double lightLivingRoom) {
-    this.id = id;
-    this.lightRoom1 = lightRoom1;
-    this.lightRoom2 = lightRoom2;
-    this.lightLivingRoom = lightLivingRoom;
   }
 
   public Long getId() {
@@ -32,27 +26,43 @@ public class LightRoom {
     this.id = id;
   }
 
-  public double getLightRoom1() {
-    return lightRoom1;
+  public boolean isLightKitchen() {
+    return lightKitchen;
   }
 
-  public void setLightRoom1(double lightRoom1) {
-    this.lightRoom1 = lightRoom1;
+  public void setLightKitchen(boolean lightKitchen) {
+    this.lightKitchen = lightKitchen;
   }
 
-  public double getLightRoom2() {
-    return lightRoom2;
+  public boolean isLightBed() {
+    return lightBed;
   }
 
-  public void setLightRoom2(double lightRoom2) {
-    this.lightRoom2 = lightRoom2;
+  public void setLightBed(boolean lightBed) {
+    this.lightBed = lightBed;
   }
 
-  public double getLightLivingRoom() {
+  public boolean isLightLivingRoom() {
     return lightLivingRoom;
   }
 
-  public void setLightLivingRoom(double lightLivingRoom) {
+  public void setLightLivingRoom(boolean lightLivingRoom) {
+    this.lightLivingRoom = lightLivingRoom;
+  }
+
+  public String getEvent() {
+    return event;
+  }
+
+  public void setEvent(String event) {
+    this.event = event;
+  }
+
+  public LightRoom(Long id, String event, boolean lightKitchen, boolean lightBed, boolean lightLivingRoom) {
+    this.id = id;
+    this.lightKitchen = lightKitchen;
+    this.event = event;
+    this.lightBed = lightBed;
     this.lightLivingRoom = lightLivingRoom;
   }
 }

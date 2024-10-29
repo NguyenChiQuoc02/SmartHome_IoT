@@ -16,7 +16,7 @@ public class LightRoomService {
     this.lightRoomRepository = lightRoomRepository;
   }
 
-  public LightRoom getLightRoom() {
+  public LightRoom getLightRoomById() {
     Optional<LightRoom> lightRoom = this.lightRoomRepository.findById(1L);
     if (lightRoom.isPresent()) {
       return lightRoom.get();
@@ -25,6 +25,7 @@ public class LightRoomService {
   }
 
   public LightRoom saveLightData(LightRoom lightRoom){
+//    LightRoom lightRoom1 = this.getLightRoomById();
     return this.lightRoomRepository.save(lightRoom);
   }
 

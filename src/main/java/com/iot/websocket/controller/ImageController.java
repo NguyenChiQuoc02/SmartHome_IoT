@@ -1,5 +1,7 @@
 package com.iot.websocket.controller;
 
+import com.iot.websocket.Entity.Image;
+import com.iot.websocket.Service.ImageService;
 import com.iot.websocket.payload.FileUploadResponse;
 import com.iot.websocket.utils.FileDownloadUtil;
 import com.iot.websocket.utils.FileUploadUtil;
@@ -15,9 +17,16 @@ import org.springframework.http.HttpHeaders;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
+import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 public class ImageController {
+  private final ImageService imageService;
+
+  public ImageController(ImageService imageService) {
+    this.imageService = imageService;
+  }
 
   @PostMapping("/uploadFile")
   public ResponseEntity<FileUploadResponse> uploadFile(
@@ -27,51 +36,31 @@ public class ImageController {
     String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
     long size = multipartFile.getSize();
 
-    String filecode = FileUploadUtil.saveFile(fileName, multipartFile);
+    // Save file on disk
+    String fileCode = FileUploadUtil.saveFile(fileName, multipartFile);
+    String fileUrl = fileCode + "-" + fileName;
+
+   this.imageService.addImage(fileUrl);
 
     FileUploadResponse response = new FileUploadResponse();
     response.setFileName(fileName);
     response.setSize(size);
-    response.setDownloadUri("/downloadFile/" + filecode);
+    response.setDownloadUri("/downloadFile/" + fileCode);
 
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
-  @GetMapping("/downloadFile/{fileCode}")
-  public ResponseEntity<?> downloadFile(@PathVariable("fileCode") String fileCode) {
+  @GetMapping("/viewImage/{id}")
+  public ResponseEntity<?> viewImage(@PathVariable("id") long id) {
     FileDownloadUtil downloadUtil = new FileDownloadUtil();
-
+    Image image = this.imageService.getImageById(id);
+    String fileCode = image.getUrlImage();
     Resource resource = null;
     try {
       resource = downloadUtil.getFileAsResource(fileCode);
     } catch (IOException e) {
       return ResponseEntity.internalServerError().build();
     }
-
-    if (resource == null) {
-      return new ResponseEntity<>("File not found", HttpStatus.NOT_FOUND);
-    }
-
-    String contentType = "application/octet-stream";
-    String headerValue = "attachment; filename=\"" + resource.getFilename() + "\"";
-
-    return ResponseEntity.ok()
-            .contentType(MediaType.parseMediaType(contentType))
-            .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
-            .body(resource);
-  }
-
-  @GetMapping("/viewImage/{fileCode}")
-  public ResponseEntity<?> viewImage(@PathVariable("fileCode") String fileCode) {
-    FileDownloadUtil downloadUtil = new FileDownloadUtil();
-
-    Resource resource = null;
-    try {
-      resource = downloadUtil.getFileAsResource(fileCode);
-    } catch (IOException e) {
-      return ResponseEntity.internalServerError().build();
-    }
-
     if (resource == null) {
       return new ResponseEntity<>("File not found", HttpStatus.NOT_FOUND);
     }
@@ -91,6 +80,12 @@ public class ImageController {
     return ResponseEntity.ok()
             .contentType(MediaType.parseMediaType(contentType))
             .body(resource);
+  }
+
+  @GetMapping("/images")
+  public ResponseEntity<List<Image>> listImages() {
+    List<Image> images = imageService.getAllImages();
+    return ResponseEntity.ok(images);
   }
 
 }
