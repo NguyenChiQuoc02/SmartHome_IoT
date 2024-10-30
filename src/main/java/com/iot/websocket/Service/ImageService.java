@@ -3,6 +3,10 @@ package com.iot.websocket.Service;
 import com.iot.websocket.Entity.Image;
 import com.iot.websocket.Repository.ImageRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,23 +19,30 @@ public class ImageService {
     this.imageRepository = imageRepository;
   }
 
-  public List<Image> getAllImages() {
-    return imageRepository.findAll();
+  public Image getImageByUrl(String urlImage) {
+    return imageRepository.findByUrlImage(urlImage);
   }
 
-  public Image getImageById(long id){
-    Optional<Image>  image = this.imageRepository.findById(id);
-    if (image.isPresent()) {
-      return image.get();
+  public Image addImage(String file,String title, boolean isReal){
+
+    if(isReal){
+      Image image = new Image();
+      image.setTitle("real_" + title);
+      image.setUrlImage(file);
+      image.setReceivedTime(LocalDateTime.now());
+      return imageRepository.save(image);
+    }else{
+      Image image = new Image();
+      image.setTitle("fake");
+      image.setUrlImage(file);
+      image.setReceivedTime(LocalDateTime.now());
+      return imageRepository.save(image);
     }
-    return null;
-  }
-  public Image addImage(String file){
 
-    // Save URL in database
-    Image image = new Image();
-    image.setUrlImage(file);
-    return imageRepository.save(image);
+  }
+
+  public Page<Image> getAllImages(int page, int limit) {
+    return imageRepository.findAll(PageRequest.of(page - 1, limit, Sort.by("receivedTime").descending()));
   }
 
 }

@@ -18,9 +18,7 @@ public class FileUploadUtil {
     if (!Files.exists(uploadPath)) {
       Files.createDirectories(uploadPath);
     }
-
     String fileCode = RandomStringUtils.randomAlphanumeric(8);
-
     try (InputStream inputStream = multipartFile.getInputStream()) {
       Path filePath = uploadPath.resolve(fileCode + "-" + fileName);
       Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);

@@ -6,6 +6,7 @@ import com.iot.websocket.payload.FileUploadResponse;
 import com.iot.websocket.utils.FileDownloadUtil;
 import com.iot.websocket.utils.FileUploadUtil;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -21,6 +22,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
+@RequestMapping("/image")
 public class ImageController {
   private final ImageService imageService;
 
@@ -28,9 +30,32 @@ public class ImageController {
     this.imageService = imageService;
   }
 
-  @PostMapping("/uploadFile")
-  public ResponseEntity<FileUploadResponse> uploadFile(
-          @RequestParam("file") MultipartFile multipartFile)
+  @PostMapping("/fake")
+  public ResponseEntity<FileUploadResponse> uploadFileFake(
+          @RequestParam("file") MultipartFile multipartFile,
+          @RequestParam(value = "title", required = false, defaultValue = "fake")  String title )
+          throws IOException {
+
+    String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+
+    // Save file on disk
+    String fileCode = FileUploadUtil.saveFile(fileName, multipartFile);
+    String fileUrl = fileCode + "-" + fileName;
+    boolean isReal =false;
+    this.imageService.addImage(fileUrl,title,isReal);
+
+    FileUploadResponse response = new FileUploadResponse();
+    response.setFileName(fileName);
+    response.setTitle(title);
+    response.setUrlImage(fileCode + "-" + fileName);
+
+    return new ResponseEntity<>(response, HttpStatus.OK);
+  }
+
+  @PostMapping("/real")
+  public ResponseEntity<FileUploadResponse> uploadFileReal(
+          @RequestParam("file") MultipartFile multipartFile,
+          @RequestParam(value = "title", required = false, defaultValue = "unknown")  String title )
           throws IOException {
 
     String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
@@ -39,21 +64,28 @@ public class ImageController {
     // Save file on disk
     String fileCode = FileUploadUtil.saveFile(fileName, multipartFile);
     String fileUrl = fileCode + "-" + fileName;
-
-   this.imageService.addImage(fileUrl);
+    boolean isReal =true;
+    this.imageService.addImage(fileUrl,title,isReal);
 
     FileUploadResponse response = new FileUploadResponse();
     response.setFileName(fileName);
-    response.setSize(size);
-    response.setDownloadUri("/downloadFile/" + fileCode);
+    response.setTitle(title);
+    response.setUrlImage(fileCode + "-" + fileName);
 
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
-  @GetMapping("/viewImage/{id}")
-  public ResponseEntity<?> viewImage(@PathVariable("id") long id) {
+  @GetMapping("/list")
+  public ResponseEntity<Page<Image>> getAllImages(@RequestParam(value = "page" ,required = false, defaultValue = "1") int page,
+                                                  @RequestParam(value = "limit",required = false, defaultValue = "5") int limit) {
+    Page<Image> images = imageService.getAllImages(page, limit);
+    return new ResponseEntity<>(images, HttpStatus.OK);
+  }
+
+  @GetMapping("/viewImage/{name}")
+  public ResponseEntity<?> viewImage(@PathVariable("name") String name) {
     FileDownloadUtil downloadUtil = new FileDownloadUtil();
-    Image image = this.imageService.getImageById(id);
+    Image image = this.imageService.getImageByUrl(name);
     String fileCode = image.getUrlImage();
     Resource resource = null;
     try {
@@ -82,10 +114,6 @@ public class ImageController {
             .body(resource);
   }
 
-  @GetMapping("/images")
-  public ResponseEntity<List<Image>> listImages() {
-    List<Image> images = imageService.getAllImages();
-    return ResponseEntity.ok(images);
-  }
+
 
 }

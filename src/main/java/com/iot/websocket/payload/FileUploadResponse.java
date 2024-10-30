@@ -3,16 +3,16 @@ package com.iot.websocket.payload;
 
 public class FileUploadResponse {
   private String fileName;
-  private String downloadUri;
-  private long size;
+  private String UrlImage;
+  private String title;
 
   public FileUploadResponse() {
   }
 
-  public FileUploadResponse(String fileName, String downloadUri, long size) {
+  public FileUploadResponse(String fileName, String urlImage, String title) {
     this.fileName = fileName;
-    this.downloadUri = downloadUri;
-    this.size = size;
+    UrlImage = urlImage;
+    this.title = title;
   }
 
   public String getFileName() {
@@ -23,19 +23,19 @@ public class FileUploadResponse {
     this.fileName = fileName;
   }
 
-  public String getDownloadUri() {
-    return downloadUri;
+  public String getUrlImage() {
+    return UrlImage;
   }
 
-  public void setDownloadUri(String downloadUri) {
-    this.downloadUri = downloadUri;
+  public void setUrlImage(String urlImage) {
+    UrlImage = urlImage;
   }
 
-  public long getSize() {
-    return size;
+  public String getTitle() {
+    return title;
   }
 
-  public void setSize(long size) {
-    this.size = size;
+  public void setTitle(String title) {
+    this.title = title;
   }
 }
