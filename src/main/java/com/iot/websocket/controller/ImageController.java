@@ -19,12 +19,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/image")
 public class ImageController {
   private final ImageService imageService;
+  private boolean isRequestAllowed = true;
+  private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
   public ImageController(ImageService imageService) {
     this.imageService = imageService;
@@ -35,6 +40,11 @@ public class ImageController {
           @RequestParam("file") MultipartFile multipartFile,
           @RequestParam(value = "title", required = false, defaultValue = "fake")  String title )
           throws IOException {
+    if (!isRequestAllowed) {
+      return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    }
+    isRequestAllowed = false;
+
 
     String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
 
@@ -49,6 +59,11 @@ public class ImageController {
     response.setTitle(title);
     response.setUrlImage(fileCode + "-" + fileName);
 
+    // Đặt tác vụ để đặt lại cờ sau 5 giây
+    scheduler.schedule(() -> {
+      isRequestAllowed = true;
+      System.out.println("Request is allowed again.");
+    }, 5, TimeUnit.SECONDS);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -57,6 +72,10 @@ public class ImageController {
           @RequestParam("file") MultipartFile multipartFile,
           @RequestParam(value = "title", required = false, defaultValue = "unknown")  String title )
           throws IOException {
+    if (!isRequestAllowed) {
+      return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    }
+    isRequestAllowed = false;
 
     String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
     long size = multipartFile.getSize();
@@ -71,7 +90,11 @@ public class ImageController {
     response.setFileName(fileName);
     response.setTitle(title);
     response.setUrlImage(fileCode + "-" + fileName);
-
+    // Đặt tác vụ để đặt lại cờ sau 5 giây
+    scheduler.schedule(() -> {
+      isRequestAllowed = true;
+      System.out.println("Request is allowed again.");
+    }, 5, TimeUnit.SECONDS);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 

@@ -3,7 +3,6 @@ package com.iot.websocket.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iot.websocket.Entity.LightRoom;
 import com.iot.websocket.Entity.SensorData;
-import com.iot.websocket.Entity.SensorDataString;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -42,12 +41,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     }
   }
 
-  public void sendSensorDataString(SensorDataString sensorData) throws IOException {
-    String json = objectMapper.writeValueAsString(sensorData);
-    for (WebSocketSession session : sessions) {
-      session.sendMessage(new TextMessage(json));
-    }
-  }
+
   public void sendLightData(LightRoom lightData) throws IOException {
     String json = objectMapper.writeValueAsString(lightData);
     for (WebSocketSession session : sessions) {

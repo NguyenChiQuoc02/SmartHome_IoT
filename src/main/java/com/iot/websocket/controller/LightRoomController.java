@@ -44,6 +44,27 @@ public class LightRoomController {
     webSocketHandler.sendLightData(savelightRoom);
     return  savelightRoom;
   }
+//
+//  public void sendLightControlData() {
+//    String url = "http://10.10.26.91";
+//
+//    // Tạo object chứa data cần gửi
+//    LightControlRequest requestData = new LightControlRequest();
+//    requestData.setLightKitchen(true);
+//    requestData.setLightBed(false);
+//    requestData.setLightLivingRoom(false);
+//    requestData.setIsServo(true);
+//
+//    // Tạo headers
+//    HttpHeaders headers = new HttpHeaders();
+//    headers.setContentType(MediaType.APPLICATION_JSON);
+//
+//    // Tạo request
+//    HttpEntity<LightControlRequest> requestEntity = new HttpEntity<>(requestData, headers);
+//
+//    // Gửi request POST
+//    restTemplate.exchange(url, HttpMethod.POST, requestEntity, Void.class);
+//  }
 
 
 //  @PostMapping("/lights")
