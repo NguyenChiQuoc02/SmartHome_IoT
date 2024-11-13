@@ -5,6 +5,12 @@ import com.iot.websocket.Service.ImageService;
 import com.iot.websocket.payload.FileUploadResponse;
 import com.iot.websocket.utils.FileDownloadUtil;
 import com.iot.websocket.utils.FileUploadUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -35,8 +41,16 @@ public class ImageController {
     this.imageService = imageService;
   }
 
+  @Operation(summary = "Upload a fake image", description = "Uploads a fake image file.")
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = Image.class))),
+          @ApiResponse(responseCode = "400", description = "Invalid ID supplied", content = @Content),
+          @ApiResponse(responseCode = "404", description = "image not found", content = @Content),
+          @ApiResponse(responseCode = "500", description = "Image error server", content = @Content)
+  })
   @PostMapping("/fake")
   public ResponseEntity<FileUploadResponse> uploadFileFake(
+          @Parameter(description = "File to upload", content = @Content(mediaType = "multipart/form-data"))
           @RequestParam("file") MultipartFile multipartFile,
           @RequestParam(value = "title", required = false, defaultValue = "fake")  String title )
           throws IOException {
@@ -66,6 +80,7 @@ public class ImageController {
     }, 5, TimeUnit.SECONDS);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
+
 
   @PostMapping("/real")
   public ResponseEntity<FileUploadResponse> uploadFileReal(
